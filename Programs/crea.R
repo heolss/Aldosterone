@@ -119,6 +119,55 @@ corr <- with(swh, {
 table(corr)
 
 
+## create corrected variables (based on Swedeheart SPSS code)
+# define Creatinine
+# define Estimated Glomerular Filtration Rate (eGFR)
+swh_crea <- within(swh, {
+    
+    crea <- NA
+    crea <- ifelse(corr == 1, d_s_creatinin*0.95, d_s_creatinin)
+    flag <- ifelse(corr == 1, 1, 0)
+    
+    crea_egfr <- NA
+    crea_egfr <- ifelse(d_gender == 1 & crea < 79.76 & !is.na(d_age_hia) & !is.na(crea)
+                        , 141*(((crea/88.4)/0.9)^-0.411)*(0.993^d_age_hia)
+                        , crea_egfr)
+    
+    crea_egfr <- ifelse(d_gender == 2 & crea < 61.88 & !is.na(d_age_hia) & !is.na(crea)
+                        , 144*(((crea/88.4)/0.7)^-0.329)*(0.993^d_age_hia)
+                        , crea_egfr)
+    
+    crea_egfr <- ifelse(d_gender == 1 & crea > 79.76 & !is.na(d_age_hia) & !is.na(crea)
+                        , 141*(((crea/88.4)/0.9)^-1.209)*(0.993^d_age_hia)
+                        , crea_egfr)
+    
+    crea_egfr <- ifelse(d_gender == 2 & crea > 61.88 & !is.na(d_age_hia) & !is.na(crea)
+                        , 144*(((crea/88.4)/0.7)^-1.209)*(0.993^d_age_hia)
+                        , crea_egfr)
+    
+    njursvikt_korr <- NA_integer_
+    njursvikt_korr[crea_egfr >= 60] <- 0L
+    njursvikt_korr[crea_egfr < 60] <- 1L
+    
+    njure_korr <- NA_integer_
+    njure_korr[crea_egfr >= 60] <- 0L
+    njure_korr[crea_egfr < 60 & crea_egfr >= 30] <- 1L
+    njure_korr[crea_egfr < 30] <- 2L
+    
+    njure_korr2 <- NA_integer_
+    njure_korr2[crea_egfr >= 60] <- 1L
+    njure_korr2[crea_egfr < 60 & crea_egfr >= 50] <- 2L
+    njure_korr2[crea_egfr < 50 & crea_egfr >= 40] <- 3L
+    njure_korr2[crea_egfr < 40 & crea_egfr >= 30] <- 4L
+    njure_korr2[crea_egfr < 30 & crea_egfr >= 20] <- 5L
+    njure_korr2[crea_egfr < 20] <- 6L
+    
+})
+
+
+crea <- select(swh_crea, idnr, id_rhia, crea, crea_egfr, njursvikt_korr, njure_korr, njure_korr2)
+saveRDS(crea, file.path("Data", "Derived data", "crea.rds"), compress = TRUE)
+
 
 ################################## end of program #################################
 
