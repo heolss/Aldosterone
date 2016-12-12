@@ -197,7 +197,7 @@ studypop_var <- within(studypop, {
 # uses help function at the top as_factor
 studypop_var[] <- lapply(studypop_var, function(i) if (is_labelled(i)) as_factor(i) else i)
 
-test <- select(studypop_var, c(idnr, d_year_num, d_age_hia, d_gender, diabetes_all, hypertoni_all, current_smoking, prior_mi, prior_pci, 
+studypop_var <- select(studypop_var, c(idnr, d_year_num, d_age_hia, d_gender, diabetes_all, hypertoni_all, current_smoking, prior_mi, prior_pci, 
                                prior_cabg, afib_adm, afib_dis, killip_above_1, dualapt_adm, killip_above_1, dualapt_adm, dualapt_dis,
                                warfarin_adm, warfarin_dis, ras_adm, ras_dis, spironolactone_adm, spironolactone_dis,
                                eplerenon_adm, eplerenon_dis, aldosterone_adm, aldosterone_dis,kom_perifer, kom_kol, kom_cancer,
@@ -205,23 +205,19 @@ test <- select(studypop_var, c(idnr, d_year_num, d_age_hia, d_gender, diabetes_a
                                calcium_antagonist_discharge, digitalis_reg, digitalis_discharge, 
                                diuretics_reg, diuretics_discharge, statins_reg, statins_discharge, d_pci, d_cabg, 
                                d_left_ventricular_function, d_inotropes, d_diuretics_treat))
-glimpse(test)
 
 # factor variables and labels of binary integer/numeric variables 
 binlab <- c("No", "Yes")
-test[] <- lapply(test, function(i){
+studypop_var[] <- lapply(studypop_var, function(i){
     if((is.integer(i) | is.numeric(i)) & length(unique(i)) %in% c(2, 3)) i <- factor(i, levels = c(0, 1), labels = binlab) else i <- i
 }) 
 
-glimpse(test)
 
 # final fix of label attributes
-test[] <- lapply(test, function(x)
+studypop_var[] <- lapply(studypop_var, function(x)
   if(is.factor(x)) plyr::revalue(x, c("Nej" = "No", "Ja" = "Yes", "Man" = "Male", "Kvinna" = "Female"))
   else x
 )
-
-glimpse(test)
 
 test <- within(test,{
     dualapt_adm <- factor(dualapt_adm, labels = c("No", "Yes/Or", "Yes/Both"))
