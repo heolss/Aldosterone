@@ -1,6 +1,6 @@
 # Header
 # Filename: studypop
-# Created: 20161208
+# Created: 20161212
 # Updated: 20160527 (updated variables) 
 # Author: Henrik Olsson
 # Purpose: Generate variables and study data
@@ -197,7 +197,7 @@ studypop_var <- within(studypop, {
 # uses help function at the top as_factor
 studypop_var[] <- lapply(studypop_var, function(i) if (is_labelled(i)) as_factor(i) else i)
 
-test <- select(studypop_var, c(idnr, d_year_num, d_age_hia, d_gender, diabetes_all, hypertoni_all, current_smoking, prior_mi, prior_pci, 
+studypop_var <- select(studypop_var, c(idnr, d_year_num, d_age_hia, d_gender, diabetes_all, hypertoni_all, current_smoking, prior_mi, prior_pci, 
                                prior_cabg, afib_adm, afib_dis, killip_above_1, dualapt_adm, killip_above_1, dualapt_adm, dualapt_dis,
                                warfarin_adm, warfarin_dis, ras_adm, ras_dis, spironolactone_adm, spironolactone_dis,
                                eplerenon_adm, eplerenon_dis, aldosterone_adm, aldosterone_dis,kom_perifer, kom_kol, kom_cancer,
@@ -205,25 +205,21 @@ test <- select(studypop_var, c(idnr, d_year_num, d_age_hia, d_gender, diabetes_a
                                calcium_antagonist_discharge, digitalis_reg, digitalis_discharge, 
                                diuretics_reg, diuretics_discharge, statins_reg, statins_discharge, d_pci, d_cabg, 
                                d_left_ventricular_function, d_inotropes, d_diuretics_treat))
-glimpse(test)
 
 # factor variables and labels of binary integer/numeric variables 
 binlab <- c("No", "Yes")
-test[] <- lapply(test, function(i){
+studypop_var[] <- lapply(studypop_var, function(i){
     if((is.integer(i) | is.numeric(i)) & length(unique(i)) %in% c(2, 3)) i <- factor(i, levels = c(0, 1), labels = binlab) else i <- i
 }) 
 
-glimpse(test)
 
 # final fix of label attributes
-test[] <- lapply(test, function(x)
+studypop_var[] <- lapply(studypop_var, function(x)
   if(is.factor(x)) plyr::revalue(x, c("Nej" = "No", "Ja" = "Yes", "Man" = "Male", "Kvinna" = "Female"))
   else x
 )
 
-glimpse(test)
-
-test <- within(test,{
+studypop_var <- within(studypop_var,{
     dualapt_adm <- factor(dualapt_adm, labels = c("No", "Yes/Or", "Yes/Both"))
     dualapt_dis <- factor(dualapt_dis, labels = c("No", "Yes/Or", "Yes/Both"))
     d_left_ventricular_function <- factor(d_left_ventricular_function, 
@@ -233,7 +229,7 @@ test <- within(test,{
                                                      "Heavily reduced (<30%)"))
 })
 
-glimpse(test)
+glimpse(studypop_var)
 
 ## OBS!!! Define Crea in separate file and add in here !!!
 
@@ -273,7 +269,7 @@ table(studypop_var$mi_def, useNA = "i"); table(studypop_var$prior_mi, useNA = "i
 # a <- data.frame(studypop$admission_date, studypop$befdoddtm, difftime(studypop$befdoddtm, studypop$admission_date, units = c("days")))
 # View(a)
 
-# OBS!!! dessa borde ersättas med dualapt_adm, bärande all information
+# OBS!!! dessa borde ers?ttas med dualapt_adm, b?rande all information
 # mono_apt_adm <- NA_integer_       
 # mono_apt_adm[aspirin_reg == 0 & other_antiplatelet_reg == 0] <- 0L
 # mono_apt_adm[aspirin_reg == 1 & other_antiplatelet_reg != 0] <- 0L
@@ -285,9 +281,9 @@ table(studypop_var$mi_def, useNA = "i"); table(studypop_var$prior_mi, useNA = "i
 
 
 
-## Obs gör dessa separat - de bär redan på all info as_labelled
-# först if as_labelled -> as_factor (egen hjälp funktion)
-# därefter gör om kvarvarande numeriska variabler till faktorer för hand
+## Obs g?r dessa separat - de b?r redan p? all info as_labelled
+# f?rst if as_labelled -> as_factor (egen hj?lp funktion)
+# d?refter g?r om kvarvarande numeriska variabler till faktorer f?r hand
 # kom_perifer <- factor(kom_perifer, labels = c("No", "Yes"))
 # copd <- factor(kom_kol, labels = c("No", "Yes"))
 # cancer <- factor(kom_cancer, labels = c("No", "Yes"))
