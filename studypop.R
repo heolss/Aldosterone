@@ -219,7 +219,7 @@ studypop_var[] <- lapply(studypop_var, function(x)
   else x
 )
 
-test <- within(test,{
+studypop_var <- within(studypop_var,{
     dualapt_adm <- factor(dualapt_adm, labels = c("No", "Yes/Or", "Yes/Both"))
     dualapt_dis <- factor(dualapt_dis, labels = c("No", "Yes/Or", "Yes/Both"))
     d_left_ventricular_function <- factor(d_left_ventricular_function, 
@@ -229,7 +229,7 @@ test <- within(test,{
                                                      "Heavily reduced (<30%)"))
 })
 
-glimpse(test)
+glimpse(studypop_var)
 
 ## OBS!!! Define Crea in separate file and add in here !!!
 
